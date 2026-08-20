@@ -43,6 +43,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
+    <!-- html2canvas Library for Exporting Invoice Image -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         * {
             font-family: 'Cairo', sans-serif;
@@ -62,7 +65,7 @@
             background: #94a3b8;
         }
         @media print {
-            header, footer, button, .no-print, #authSection {
+            header, footer, button, .no-print, #authSection, #depositModal, #editMemberModal, #invoiceExportModal {
                 display: none !important;
             }
             body {
@@ -187,12 +190,11 @@
                     </div>
                 </div>
 
-                <!-- Tab 2: Admin Password Access -->
+                <!-- Tab 2: Admin Password Access (Password hidden cleanly) -->
                 <div id="adminAuthBox" class="space-y-4 hidden">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">كلمة مرور المشرف (PIN):</label>
-                        <input type="password" id="adminPinInput" placeholder="أدخل الرقم السري (2580)" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none text-center font-mono tracking-widest text-lg">
-                        <p class="text-[11px] text-slate-400 mt-2 text-center">رمز مرور المشرف المعين: <span class="font-bold text-slate-600 font-mono">2580</span></p>
+                        <input type="password" id="adminPinInput" placeholder="••••" class="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base focus:ring-2 focus:ring-emerald-500 focus:outline-none text-center font-mono tracking-widest">
                     </div>
 
                     <button onclick="loginAsAdmin()" class="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm">
@@ -219,10 +221,19 @@
                         <p class="text-xs text-emerald-200">إدارة المصاريف الشهرية، تسجيل الإيداعات، وتوزيع الحصص على 9 أعضاء</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2 bg-emerald-950/70 px-4 py-2.5 rounded-2xl border border-emerald-600/40 text-xs sm:text-sm font-semibold">
-                    <i class="fa-solid fa-calendar-day text-amber-400"></i>
-                    <span>الشهر المختار:</span>
-                    <input type="month" id="selectedMonthFilter" onchange="onMonthFilterChange()" class="bg-emerald-900 text-white border-0 rounded-lg px-2.5 py-1 text-xs focus:ring-1 focus:ring-emerald-400 cursor-pointer font-bold">
+                
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex items-center gap-2 bg-emerald-950/70 px-3.5 py-2 rounded-2xl border border-emerald-600/40 text-xs sm:text-sm font-semibold">
+                        <i class="fa-solid fa-calendar-day text-amber-400"></i>
+                        <span>الشهر:</span>
+                        <input type="month" id="selectedMonthFilter" onchange="onMonthFilterChange()" class="bg-emerald-900 text-white border-0 rounded-lg px-2 py-1 text-xs focus:ring-1 focus:ring-emerald-400 cursor-pointer font-bold">
+                    </div>
+
+                    <!-- Export Image Button -->
+                    <button onclick="openInvoiceExportModal()" class="px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-900 font-extrabold text-xs sm:text-sm rounded-2xl shadow-md transition-all flex items-center gap-1.5 border border-amber-400">
+                        <i class="fa-solid fa-image text-slate-900"></i>
+                        <span>تصدير الفاتورة كصورة</span>
+                    </button>
                 </div>
             </div>
 
@@ -300,7 +311,7 @@
                     <form id="addExpenseForm" onsubmit="handleAddExpense(event)" class="space-y-3.5">
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1">بيان المصروف (الوصف):</label>
-                            <input type="text" id="expDesc" required placeholder="مثال: راتب مهر، فاتورة الكهرباء، سباكة..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium">
+                            <input type="text" id="expDesc" required placeholder="مثال: فاتورة الكهرباء، راتب مهر، سباكة..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium">
                         </div>
 
                         <div class="grid grid-cols-2 gap-2">
@@ -338,8 +349,13 @@
                             <h3 class="text-base font-bold text-slate-800">مصاريف شهر <span id="currentFilteredMonthLabel" class="text-emerald-700 font-extrabold font-mono"></span></h3>
                             <p class="text-xs text-slate-400">يتم تقسيم إجمالي الصافي تلقائياً على 9 أشخاص</p>
                         </div>
-                        <div class="bg-amber-50 text-amber-900 px-3.5 py-1.5 rounded-xl border border-amber-200 text-xs font-bold">
-                            نصيب الفرد (1/9): <span id="tablePerPersonShare" class="font-mono text-sm font-black text-amber-700">0.00</span> ريال
+                        <div class="flex items-center gap-2">
+                            <div class="bg-amber-50 text-amber-900 px-3.5 py-1.5 rounded-xl border border-amber-200 text-xs font-bold">
+                                نصيب الفرد (1/9): <span id="tablePerPersonShare" class="font-mono text-sm font-black text-amber-700">0.00</span> ريال
+                            </div>
+                            <button onclick="openInvoiceExportModal()" class="p-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-xl text-xs font-bold transition-all flex items-center gap-1" title="عرض وتصدير صورة الفاتورة">
+                                <i class="fa-solid fa-file-invoice"></i>
+                            </button>
                         </div>
                     </div>
 
@@ -522,6 +538,100 @@
 
     </main>
 
+
+    <!-- ==================== MODAL: INVOICE IMAGE EXPORT (MATCHING ATTACHED DESIGN) ==================== -->
+    <div id="invoiceExportModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-4 sm:p-6 border border-slate-100 my-auto">
+            
+            <div class="flex justify-between items-center mb-4 no-print">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-emerald-600 text-lg"></i>
+                    <h3 class="text-sm sm:text-base font-black text-slate-800">بطاقة الفاتورة الشهرية (جاهزة للمشاركة)</h3>
+                </div>
+                <button onclick="closeInvoiceExportModal()" class="text-slate-400 hover:text-slate-600 text-xl p-1">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- THE EXACT CARD TO BE EXPORTED AS IMAGE -->
+            <div class="flex justify-center p-1 bg-slate-100/50 rounded-2xl">
+                <div id="invoiceCardElement" class="bg-white w-full max-w-[420px] rounded-[28px] border border-slate-200/90 p-6 sm:p-8 flex flex-col items-center text-center shadow-lg" style="font-family: 'Cairo', sans-serif;">
+                    
+                    <!-- Top Logo Icon -->
+                    <div class="w-16 h-16 bg-[#2d6a4f] rounded-full flex items-center justify-center mb-3 shadow-sm">
+                        <svg class="w-8 h-8 text-white fill-current" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 16.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                        </svg>
+                    </div>
+
+                    <!-- Title & Prayer -->
+                    <h2 class="text-2xl font-black text-[#1b4332] tracking-tight">مزرعة بابا حميدان</h2>
+                    <p class="text-sm font-semibold text-slate-500 mb-4">رحمه الله وغفر له</p>
+
+                    <!-- Month Title Banner -->
+                    <div class="w-full bg-[#d8f3dc] text-[#1b4332] py-2.5 px-4 rounded-xl font-black text-base sm:text-lg mb-5 shadow-xs">
+                        فاتورة مصاريف <span id="invCardMonthLabel">شهر</span>
+                    </div>
+
+                    <!-- Invoice Table -->
+                    <div class="w-full overflow-hidden rounded-xl border border-slate-100 mb-4">
+                        <table class="w-full text-right text-xs">
+                            <thead class="bg-[#e9ecef] text-slate-700 font-black">
+                                <tr>
+                                    <th class="py-2.5 px-3 w-10 text-center">#</th>
+                                    <th class="py-2.5 px-3">البند</th>
+                                    <th class="py-2.5 px-3 text-left">المبلغ (ر.س)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invCardItemsBody" class="divide-y divide-slate-100 text-slate-800 font-bold">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Solid Green Line -->
+                    <div class="w-full border-t-2 border-[#2d6a4f] my-2"></div>
+
+                    <!-- Totals Section -->
+                    <div class="w-full space-y-2 py-1">
+                        <div class="flex justify-between items-center text-sm font-black text-slate-900 px-2">
+                            <span>الإجمالي</span>
+                            <span id="invCardTotalSum" class="font-mono text-base text-slate-900">0.00 ر.س</span>
+                        </div>
+                        <div class="flex justify-between items-center text-base font-black text-[#2d6a4f] px-2">
+                            <span>نصيب كل فرد (÷ 9)</span>
+                            <span id="invCardSharePerPerson" class="font-mono text-lg text-[#2d6a4f]">0.00 ر.س</span>
+                        </div>
+                    </div>
+
+                    <!-- Dashed Line -->
+                    <div class="w-full border-t border-dashed border-slate-300 my-4"></div>
+
+                    <!-- Footer Details -->
+                    <div class="text-xs text-slate-500 space-y-1 font-medium">
+                        <p id="invCardIssueDate">تاريخ الإصدار: -</p>
+                        <p class="font-bold text-[#1b4332]">بارك الله في الجميع</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Action Buttons for Export -->
+            <div class="flex flex-col sm:flex-row gap-2.5 mt-5">
+                <button id="downloadPngBtn" onclick="downloadInvoiceCardAsImage()" class="flex-1 py-3 bg-[#2d6a4f] hover:bg-[#1b4332] text-white font-bold rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 text-xs sm:text-sm">
+                    <i class="fa-solid fa-download"></i>
+                    <span>تحميل الصورة (PNG)</span>
+                </button>
+                <button onclick="shareInvoiceWhatsApp()" class="py-3 px-5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 text-xs sm:text-sm">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    <span>مشاركة عبر واتساب</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+
     <!-- ==================== MODAL: ADD DEPOSIT ==================== -->
     <div id="depositModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 border border-slate-100">
@@ -648,7 +758,7 @@
 
         // 2. Application State & Constants
         const ADMIN_PIN = "2580";
-        let currentUser = null; // { role: 'admin' | 'member', id: string, name: string, phone: string }
+        let currentUser = null;
         let currentAuthTab = 'phone';
         let confirmationResult = null;
         let recaptchaVerifier = null;
@@ -1280,6 +1390,111 @@
                 showToast('تم حفظ بيانات العضو', 'success');
                 closeEditMemberModal();
             });
+        }
+
+        // ==================== INVOICE CARD IMAGE EXPORT FEATURE ====================
+        const arabicMonthNames = {
+            "01": "يناير", "02": "فبراير", "03": "مارس", "04": "أبريل",
+            "05": "مايو", "06": "يونيو", "07": "يوليو", "08": "أغسطس",
+            "09": "سبتمبر", "10": "أكتوبر", "11": "نوفمبر", "12": "ديسمبر"
+        };
+
+        function openInvoiceExportModal() {
+            const selectedMonth = document.getElementById('selectedMonthFilter').value;
+            const [year, monthNum] = selectedMonth.split('-');
+            const monthArabic = (arabicMonthNames[monthNum] || monthNum) + ' ' + year;
+
+            document.getElementById('invCardMonthLabel').innerText = monthArabic;
+
+            const allExpenses = Object.values(expensesData);
+            const monthExpenses = allExpenses.filter(e => e.month === selectedMonth).sort((a,b) => new Date(a.date) - new Date(b.date));
+            const monthTotal = monthExpenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+            const perPersonShare = monthTotal / 9.0;
+
+            const tbody = document.getElementById('invCardItemsBody');
+            if (monthExpenses.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-slate-400">لا توجد بنود مصاريف مسجلة لشهر ${monthArabic}</td></tr>`;
+            } else {
+                tbody.innerHTML = monthExpenses.map((item, idx) => `
+                    <tr class="hover:bg-slate-50">
+                        <td class="py-2.5 px-3 text-center text-slate-400 font-mono">${idx + 1}</td>
+                        <td class="py-2.5 px-3 font-bold text-slate-800">${item.description}</td>
+                        <td class="py-2.5 px-3 text-left font-mono font-bold text-slate-800" dir="ltr">${formatMoney(item.amount)} ر.س</td>
+                    </tr>
+                `).join('');
+            }
+
+            document.getElementById('invCardTotalSum').innerText = formatMoney(monthTotal) + ' ر.س';
+            document.getElementById('invCardSharePerPerson').innerText = formatMoney(perPersonShare) + ' ر.س';
+
+            const today = new Date();
+            const day = today.getDate();
+            const currMonthArabic = arabicMonthNames[String(today.getMonth() + 1).padStart(2, '0')] || '';
+            const currYear = today.getFullYear();
+            document.getElementById('invCardIssueDate').innerText = `تاريخ الإصدار: ${day} ${currMonthArabic} ${currYear}`;
+
+            document.getElementById('invoiceExportModal').classList.remove('hidden');
+        }
+
+        function closeInvoiceExportModal() {
+            document.getElementById('invoiceExportModal').classList.add('hidden');
+        }
+
+        function downloadInvoiceCardAsImage() {
+            const cardEl = document.getElementById('invoiceCardElement');
+            const selectedMonth = document.getElementById('selectedMonthFilter').value;
+            const btn = document.getElementById('downloadPngBtn');
+
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري تجهيز الصورة...';
+            btn.disabled = true;
+
+            html2canvas(cardEl, {
+                scale: 3,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                logging: false
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `فاتورة_مزرعة_بابا_حميدان_${selectedMonth}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+                btn.innerHTML = '<i class="fa-solid fa-download"></i> <span>تحميل الصورة (PNG)</span>';
+                btn.disabled = false;
+                showToast('تم تحميل صورة الفاتورة بنجاح!', 'success');
+            }).catch(err => {
+                console.error(err);
+                btn.innerHTML = '<i class="fa-solid fa-download"></i> <span>تحميل الصورة (PNG)</span>';
+                btn.disabled = false;
+                showToast('حدث خطأ أثناء تصدير الصورة', 'error');
+            });
+        }
+
+        function shareInvoiceWhatsApp() {
+            const selectedMonth = document.getElementById('selectedMonthFilter').value;
+            const [year, monthNum] = selectedMonth.split('-');
+            const monthArabic = (arabicMonthNames[monthNum] || monthNum) + ' ' + year;
+
+            const allExpenses = Object.values(expensesData);
+            const monthExpenses = allExpenses.filter(e => e.month === selectedMonth);
+            const monthTotal = monthExpenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+            const perPersonShare = monthTotal / 9.0;
+
+            let text = `🌴 *مزرعة بابا حميدان* (رحمه الله وغفر له)\\n`;
+            text += `📋 *فاتورة مصاريف ${monthArabic}*\\n\\n`;
+
+            monthExpenses.forEach((item, idx) => {
+                text += `${idx + 1}. ${item.description}: *${formatMoney(item.amount)} ر.س*\\n`;
+            });
+
+            text += `\\n━━━━━━━━━━━━━━━\\n`;
+            text += `💰 *الإجمالي:* ${formatMoney(monthTotal)} ر.س\\n`;
+            text += `👥 *نصيب كل فرد (÷ 9):* ${formatMoney(perPersonShare)} ر.س\\n`;
+            text += `━━━━━━━━━━━━━━━\\n`;
+            text += `بارك الله في الجميع 🤍`;
+
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
         }
 
         // ==================== MEMBER DASHBOARD RENDERING ====================
