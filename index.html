@@ -46,7 +46,7 @@
     <!-- html2canvas for Exporting Invoice Image -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <!-- SheetJS for Direct Excel (.xlsx / .xlsb / .xls / .csv) Import -->
+    <!-- SheetJS for Direct Excel Import -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <style>
@@ -68,7 +68,7 @@
             background: #94a3b8;
         }
         @media print {
-            header, footer, button, .no-print, #authSection, #depositModal, #editMemberModal, #invoiceExportModal, #importExcelModal {
+            header, footer, button, .no-print, #authSection, #depositModal, #editMemberModal, #invoiceExportModal, #importExcelModal, .top-status-bar {
                 display: none !important;
             }
             body {
@@ -84,7 +84,7 @@
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-white">
 
     <!-- Top Cloud Connection Status Bar -->
-    <div class="bg-slate-900 text-white text-xs px-4 py-1.5 border-b border-slate-800 flex justify-between items-center z-50">
+    <div class="top-status-bar bg-slate-900 text-white text-xs px-4 py-1.5 border-b border-slate-800 flex justify-between items-center z-50">
         <div class="max-w-7xl mx-auto w-full flex justify-between items-center">
             <!-- Cloud Connection Status Indicator -->
             <div class="flex items-center gap-2">
@@ -135,7 +135,7 @@
     <!-- Main Container -->
     <main class="flex-grow max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 w-full">
 
-        <!-- ==================== 1. LOGIN SCREEN (NO OTP - PASSWORD ACCESS) ==================== -->
+        <!-- ==================== 1. LOGIN SCREEN ==================== -->
         <section id="authSection" class="max-w-md mx-auto my-4 sm:my-8">
             <div class="bg-white rounded-3xl shadow-xl border border-slate-100 p-6 sm:p-8">
                 
@@ -144,7 +144,7 @@
                         <i class="fa-solid fa-seedling"></i>
                     </div>
                     <h2 class="text-xl sm:text-2xl font-black text-slate-800">تسجيل الدخول للنظام</h2>
-                    <p class="text-xs text-slate-500 mt-1">اختر حسابك وأدخل كلمة المرور الخاصة بك</p>
+                    <p class="text-xs text-slate-500 mt-1">اختر حسابك وأدخل كلمة المرور للدخول</p>
                 </div>
 
                 <!-- Tabs: Member Login vs Admin Login -->
@@ -209,7 +209,7 @@
                     </div>
                     <div>
                         <h2 class="text-xl sm:text-2xl font-black">لوحة تحكم المشرف (Admin)</h2>
-                        <p class="text-xs text-emerald-200">إدارة المصاريف الشهرية، تسمية الأعضاء وكلمات مرورهم، وتوزيع الحصص</p>
+                        <p class="text-xs text-emerald-200">إدارة وتوزيع مصاريف المزرعة على 9 أعضاء مع احتساب الأرصدة</p>
                     </div>
                 </div>
                 
@@ -217,13 +217,13 @@
                     <div class="flex items-center gap-2 bg-emerald-950/70 px-3.5 py-2 rounded-2xl border border-emerald-600/40 text-xs sm:text-sm font-semibold">
                         <i class="fa-solid fa-calendar-day text-amber-400"></i>
                         <span>الشهر:</span>
-                        <input type="month" id="selectedMonthFilter" onchange="onMonthFilterChange()" class="bg-emerald-900 text-white border-0 rounded-lg px-2 py-1 text-xs focus:ring-1 focus:ring-emerald-400 cursor-pointer font-bold">
+                        <input type="month" id="selectedMonthFilter" onchange="onMonthFilterChange()" class="bg-emerald-900 text-white border-0 rounded-lg px-2 py-1 text-xs focus:ring-1 focus:ring-emerald-400 cursor-pointer font-bold font-mono">
                     </div>
 
                     <!-- Excel Import Button -->
                     <button onclick="openImportExcelModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-md transition-all flex items-center gap-1.5 border border-emerald-400">
                         <i class="fa-solid fa-file-excel text-emerald-200"></i>
-                        <span>استيراد من إكسيل</span>
+                        <span>استيراد إكسيل</span>
                     </button>
 
                     <!-- Export Image Button -->
@@ -308,7 +308,7 @@
                     <form id="addExpenseForm" onsubmit="handleAddExpense(event)" class="space-y-3.5">
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1">بيان المصروف (الوصف):</label>
-                            <input type="text" id="expDesc" required placeholder="مثال: راتب مهر، فاتورة الكهرباء، سباكة..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium">
+                            <input type="text" id="expDesc" required placeholder="مثال: فاتورة الكهرباء، راتب العامل، سباكة..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium">
                         </div>
 
                         <div class="grid grid-cols-2 gap-2">
@@ -318,13 +318,13 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-600 mb-1">الشهر المستهدف:</label>
-                                <input type="month" id="expMonth" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium">
+                                <input type="month" id="expMonth" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium font-mono">
                             </div>
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1">تاريخ العملية:</label>
-                            <input type="date" id="expDate" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium">
+                            <input type="date" id="expDate" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium font-mono">
                         </div>
 
                         <div>
@@ -369,7 +369,7 @@
                             </thead>
                             <tbody id="expensesTableBody" class="divide-y divide-slate-100">
                                 <tr>
-                                    <td colspan="5" class="text-center py-8 text-slate-400">جاري تحميل البيانات...</td>
+                                    <td colspan="5" class="text-center py-8 text-slate-400">لا توجد مصاريف مسجلة لهذا الشهر</td>
                                 </tr>
                             </tbody>
                             <tfoot class="bg-slate-50/90 font-bold border-t border-slate-200">
@@ -391,10 +391,16 @@
                             <h3 class="text-base sm:text-lg font-bold text-slate-800">إدارة أسماء الأعضاء الـ 9 وكلمات المرور الخاصة بهم</h3>
                             <p class="text-xs text-slate-400">يمكن للمشرف تعديل اسم كل عضو، تعيين كلمة مرور لدخوله، وتسجيل إيداعاته</p>
                         </div>
-                        <button onclick="openDepositModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow transition-all flex items-center gap-1.5">
-                            <i class="fa-solid fa-money-bill-transfer"></i>
-                            <span>تسجيل إيداع لعضو</span>
-                        </button>
+                        <div class="flex gap-2">
+                            <button onclick="openDepositModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow transition-all flex items-center gap-1.5">
+                                <i class="fa-solid fa-money-bill-transfer"></i>
+                                <span>تسجيل إيداع لعضو</span>
+                            </button>
+                            <button onclick="confirmWipeAllExpenses()" class="px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold rounded-xl border border-red-200 transition-all flex items-center gap-1.5" title="مسح وتصفير كافة المصاريف من السحابة">
+                                <i class="fa-solid fa-trash-can"></i>
+                                <span>تصفير المصاريف</span>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Members Grid -->
@@ -541,7 +547,7 @@
     </main>
 
 
-    <!-- ==================== MODAL: INVOICE IMAGE EXPORT (MATCHING ATTACHED DESIGN) ==================== -->
+    <!-- ==================== MODAL: INVOICE IMAGE EXPORT ==================== -->
     <div id="invoiceExportModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto hidden">
         <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-4 sm:p-6 border border-slate-100 my-auto">
             
@@ -640,7 +646,7 @@
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
                     <i class="fa-solid fa-file-excel text-emerald-600"></i>
-                    <span>استيراد المصاريف من ملف إكسيل بأثر رجعي</span>
+                    <span>استيراد المصاريف من ملف إكسيل</span>
                 </h3>
                 <button onclick="closeImportExcelModal()" class="text-slate-400 hover:text-slate-600 text-xl">
                     <i class="fa-solid fa-xmark"></i>
@@ -699,7 +705,7 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-1">تاريخ الإيداع:</label>
-                    <input type="date" id="depositDate" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium">
+                    <input type="date" id="depositDate" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium font-mono">
                 </div>
 
                 <div>
@@ -776,7 +782,7 @@
     <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 mt-auto">
         <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
             <span>نظام مصاريف مزرعة بابا حميدان © 2026</span>
-            <span class="text-[11px] text-slate-400">مربوط سحابياً بـ Firebase Realtime Database ومحفوظ محلياً</span>
+            <span class="text-[11px] text-slate-400">مربوط سحابياً بـ Firebase ومحفوظ محلياً</span>
         </div>
     </footer>
 
@@ -806,12 +812,12 @@
         let currentUser = null;
         let isCloudConnected = false;
 
-        // Data Stores (Loaded from LocalStorage + synced with Firebase)
+        // Data Stores - Clean Zero State (No hardcoded sample expenses)
         let membersData = {};
         let expensesData = {};
         let depositsData = {};
 
-        // Default 9 Members Seed Template with individual default PINs
+        // Default 9 Members Slots (Admin can rename them and set passwords)
         const default9Members = {
             "m1": { id: "m1", name: "العضو 1", pin: "1111", phone: "" },
             "m2": { id: "m2", name: "العضو 2", pin: "2222", phone: "" },
@@ -822,26 +828,6 @@
             "m7": { id: "m7", name: "العضو 7", pin: "7777", phone: "" },
             "m8": { id: "m8", name: "العضو 8", pin: "8888", phone: "" },
             "m9": { id: "m9", name: "العضو 9", pin: "9999", phone: "" }
-        };
-
-        // Initial Sample Expenses (Retroactive Data matching Excel and Attachments)
-        const initialSampleExpenses = {
-            "exp_may_1": { id: "exp_may_1", description: "راتب مهر شهر 5", amount: 800, date: "2026-05-01", month: "2026-05", notes: "راتب العامل" },
-            "exp_may_2": { id: "exp_may_2", description: "فاتورة الماء 2026/05", amount: 14.72, date: "2026-05-15", month: "2026-05", notes: "شركة المياه" },
-            "exp_may_3": { id: "exp_may_3", description: "فاتورة الكهرباء شهر 2026/05", amount: 411.42, date: "2026-05-20", month: "2026-05", notes: "شركة الكهرباء" },
-            "exp_may_4": { id: "exp_may_4", description: "أغراض سباكة", amount: 304, date: "2026-05-22", month: "2026-05", notes: "محل السباكة" },
-            "exp_may_5": { id: "exp_may_5", description: "شغل يد تركيب الأغراض و اصلاح الالتماس في الكهرب", amount: 150, date: "2026-05-23", month: "2026-05", notes: "فني كهرباء" },
-            "exp_may_6": { id: "exp_may_6", description: "حداد لتثبيت الشينكو الساتر بين الاستراحة و الجار الجنوبي", amount: 300, date: "2026-05-25", month: "2026-05", notes: "ورشة حدادة" },
-            
-            "exp_jun_1": { id: "exp_jun_1", description: "راتب مهر شهر 6", amount: 1000, date: "2026-06-01", month: "2026-06", notes: "راتب العامل" },
-            "exp_jun_2": { id: "exp_jun_2", description: "فاتورة الماء 2026/06", amount: 8.63, date: "2026-06-12", month: "2026-06", notes: "شركة المياه" },
-            "exp_jun_3": { id: "exp_jun_3", description: "فاتورة الكهرباء شهر 2026/06", amount: 540.00, date: "2026-06-18", month: "2026-06", notes: "شركة الكهرباء" },
-            "exp_jun_4": { id: "exp_jun_4", description: "تجديد إقامة مهر", amount: 600.00, date: "2026-06-25", month: "2026-06", notes: "الجوازات" },
-
-            "exp_jul_1": { id: "exp_jul_1", description: "الكهرباء", amount: 681.69, date: "2026-07-15", month: "2026-07", notes: "فاتورة شهر 7" },
-            "exp_jul_2": { id: "exp_jul_2", description: "الماء", amount: 19.65, date: "2026-07-18", month: "2026-07", notes: "فاتورة شهر 7" },
-            "exp_jul_3": { id: "exp_jul_3", description: "راتب مهر", amount: 1000.00, date: "2026-07-01", month: "2026-07", notes: "راتب العامل" },
-            "exp_jul_4": { id: "exp_jul_4", description: "الغاز", amount: 120.00, date: "2026-07-22", month: "2026-07", notes: "اسطوانات غاز" }
         };
 
         // --- Init Lifecycle ---
@@ -859,14 +845,23 @@
                 const localExpenses = localStorage.getItem('farm_db_expenses');
                 const localDeposits = localStorage.getItem('farm_db_deposits');
 
-                if (localMembers) membersData = JSON.parse(localMembers);
-                else membersData = default9Members;
+                if (localMembers) {
+                    membersData = JSON.parse(localMembers);
+                } else {
+                    membersData = default9Members;
+                }
 
-                if (localExpenses) expensesData = JSON.parse(localExpenses);
-                else expensesData = initialSampleExpenses;
+                if (localExpenses) {
+                    expensesData = JSON.parse(localExpenses);
+                } else {
+                    expensesData = {}; // Clean empty state
+                }
 
-                if (localDeposits) depositsData = JSON.parse(localDeposits);
-                else depositsData = {};
+                if (localDeposits) {
+                    depositsData = JSON.parse(localDeposits);
+                } else {
+                    depositsData = {};
+                }
 
                 updateMembersSelectOptions();
             } catch (e) {
@@ -927,7 +922,7 @@
                 .then(() => {
                     const latency = Date.now() - start;
                     setCloudStatus(true, 'متصل بالسحابة (Firebase Online)');
-                    showToast(`الاتصال السحابي ممتاز! زمن الاستجابة: ${latency}ms`, 'success');
+                    showToast(`الاتصال السحابي ممتاز! سرعة الاستجابة: ${latency}ms`, 'success');
                 })
                 .catch((err) => {
                     setCloudStatus(false, 'غير متصل (تحقق من قواعد Firebase)');
@@ -935,7 +930,7 @@
                 });
         }
 
-        // --- Setup Firebase Realtime Listeners ---
+        // --- Setup Firebase Realtime Listeners (No hardcoded re-seeding on delete!) ---
         function setupFirebaseListeners() {
             // 1. Members
             db.ref('members').on('value', (snapshot) => {
@@ -953,14 +948,13 @@
                 console.warn('Firebase members sync issue:', err);
             });
 
-            // 2. Expenses
+            // 2. Expenses (Never auto-seed dummy data when empty!)
             db.ref('expenses').on('value', (snapshot) => {
                 const val = snapshot.val();
-                if (val && Object.keys(val).length > 0) {
+                if (val) {
                     expensesData = val;
                 } else {
-                    db.ref('expenses').set(initialSampleExpenses);
-                    expensesData = initialSampleExpenses;
+                    expensesData = {}; // Stay completely empty if deleted!
                 }
                 saveLocalCache();
                 if (currentUser) renderCurrentView();
@@ -1128,8 +1122,8 @@
             const selectedMonth = document.getElementById('selectedMonthFilter').value;
             document.getElementById('currentFilteredMonthLabel').innerText = selectedMonth;
 
-            const allExpenses = Object.values(expensesData);
-            const allDeposits = Object.values(depositsData);
+            const allExpenses = Object.values(expensesData || {});
+            const allDeposits = Object.values(depositsData || {});
 
             // Month specific calculation
             const monthExpenses = allExpenses.filter(e => e.month === selectedMonth);
@@ -1152,7 +1146,7 @@
             // Render Expenses Table
             const tbody = document.getElementById('expensesTableBody');
             if (monthExpenses.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400">لا توجد مصاريف مسجلة لشهر ${selectedMonth}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-slate-400">لا توجد مصاريف مسجلة لشهر ${selectedMonth}</td></tr>`;
             } else {
                 tbody.innerHTML = monthExpenses.sort((a,b) => new Date(b.date) - new Date(a.date)).map(exp => `
                     <tr class="hover:bg-slate-50 transition-colors">
@@ -1176,12 +1170,12 @@
 
         function renderAdminMembersCards() {
             const container = document.getElementById('membersCardsGrid');
-            const allExpenses = Object.values(expensesData);
+            const allExpenses = Object.values(expensesData || {});
             const totalAllTimeExpenses = allExpenses.reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
             const allTimeSharePerPerson = totalAllTimeExpenses / 9.0;
 
             container.innerHTML = Object.values(membersData).map(member => {
-                const memberDeposits = Object.values(depositsData).filter(d => d.memberId === member.id);
+                const memberDeposits = Object.values(depositsData || {}).filter(d => d.memberId === member.id);
                 const totalDep = memberDeposits.reduce((s, d) => s + (parseFloat(d.amount) || 0), 0);
                 const netBalance = totalDep - allTimeSharePerPerson;
                 const isPositive = netBalance >= 0;
@@ -1234,7 +1228,7 @@
 
         function renderExcelSummary() {
             const container = document.getElementById('excelSummaryContainer');
-            const allExpenses = Object.values(expensesData);
+            const allExpenses = Object.values(expensesData || {});
             
             const monthsMap = {};
             allExpenses.forEach(exp => {
@@ -1246,7 +1240,7 @@
             const sortedMonths = Object.keys(monthsMap).sort().reverse();
 
             if (sortedMonths.length === 0) {
-                container.innerHTML = '<div class="text-center py-6 text-slate-400">لا توجد سجلات مصاريف لعرضها</div>';
+                container.innerHTML = '<div class="text-center py-8 text-slate-400 text-sm">لا توجد مصاريف مسجلة لعرضها في الكشف الشامل</div>';
                 return;
             }
 
@@ -1330,18 +1324,16 @@
                 createdAt: firebase.database.ServerValue.TIMESTAMP
             };
 
-            // Save in memory & local cache immediately
             expensesData[newId] = expenseItem;
             saveLocalCache();
             renderAdminDashboard();
 
-            // Sync with Firebase
             db.ref('expenses/' + newId).set(expenseItem)
                 .then(() => {
-                    showToast('تم حفظ ومزامنة المصروف بنجاح', 'success');
+                    showToast('تم حفظ المصروف في السحابة بنجاح', 'success');
                 })
                 .catch(err => {
-                    showToast('تم الحفظ محلياً (حدث خطأ في المزامنة السحابية: ' + err.message + ')', 'info');
+                    showToast('تم الحفظ محلياً: ' + err.message, 'info');
                 });
 
             document.getElementById('expDesc').value = '';
@@ -1356,7 +1348,21 @@
                 renderAdminDashboard();
 
                 db.ref('expenses/' + id).remove().then(() => {
-                    showToast('تم حذف المصروف', 'info');
+                    showToast('تم حذف المصروف نهائياً', 'info');
+                });
+            }
+        }
+
+        function confirmWipeAllExpenses() {
+            if (confirm('تنبيه: هل أنت متأكد من مسح وتصفير كافة المصاريف نهائياً من قاعدة البيانات للبدء من جديد للشهر القادم؟')) {
+                expensesData = {};
+                saveLocalCache();
+                renderAdminDashboard();
+
+                db.ref('expenses').set({}).then(() => {
+                    showToast('تم تصفير المصاريف بنجاح والبدء بصفحة نظيفة', 'success');
+                }).catch(err => {
+                    showToast('تم التصفير محلياً: ' + err.message, 'info');
                 });
             }
         }
@@ -1459,7 +1465,7 @@
             });
         }
 
-        // ==================== EXCEL IMPORT ENGINE (RETROACTIVE EXPENSES) ====================
+        // ==================== EXCEL IMPORT ENGINE ====================
         function openImportExcelModal() {
             document.getElementById('importExcelModal').classList.remove('hidden');
             document.getElementById('importStatusBox').classList.add('hidden');
@@ -1532,12 +1538,10 @@
                     });
 
                     if (importedCount > 0) {
-                        // Merge into expenses
                         Object.assign(expensesData, newExpenses);
                         saveLocalCache();
                         renderAdminDashboard();
 
-                        // Batch save to Firebase
                         db.ref('expenses').update(newExpenses).then(() => {
                             statusBox.innerHTML = `<span class="text-emerald-700 font-bold">✅ تم استيراد ومزامنة ${importedCount} بند بنجاح! بإجمالي ${formatMoney(totalImportedSum)} ريال.</span>`;
                             showToast(`تم استيراد ${importedCount} بند بنجاح`, 'success');
@@ -1570,14 +1574,14 @@
 
             document.getElementById('invCardMonthLabel').innerText = monthArabic;
 
-            const allExpenses = Object.values(expensesData);
+            const allExpenses = Object.values(expensesData || {});
             const monthExpenses = allExpenses.filter(e => e.month === selectedMonth).sort((a,b) => new Date(a.date) - new Date(b.date));
             const monthTotal = monthExpenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
             const perPersonShare = monthTotal / 9.0;
 
             const tbody = document.getElementById('invCardItemsBody');
             if (monthExpenses.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-slate-400">لا توجد بنود مصاريف مسجلة لشهر ${monthArabic}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-slate-400">لا توجد بنود مصاريف مسجلة لشهر ${monthArabic}</td></tr>`;
             } else {
                 tbody.innerHTML = monthExpenses.map((item, idx) => `
                     <tr class="hover:bg-slate-50">
@@ -1639,7 +1643,7 @@
             const [year, monthNum] = selectedMonth.split('-');
             const monthArabic = (arabicMonthNames[monthNum] || monthNum) + ' ' + year;
 
-            const allExpenses = Object.values(expensesData);
+            const allExpenses = Object.values(expensesData || {});
             const monthExpenses = allExpenses.filter(e => e.month === selectedMonth);
             const monthTotal = monthExpenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
             const perPersonShare = monthTotal / 9.0;
@@ -1647,9 +1651,13 @@
             let text = `🌴 *مزرعة بابا حميدان* (رحمه الله وغفر له)\\n`;
             text += `📋 *فاتورة مصاريف ${monthArabic}*\\n\\n`;
 
-            monthExpenses.forEach((item, idx) => {
-                text += `${idx + 1}. ${item.description}: *${formatMoney(item.amount)} ر.س*\\n`;
-            });
+            if (monthExpenses.length === 0) {
+                text += `لا توجد مصاريف مسجلة لهذا الشهر.\\n`;
+            } else {
+                monthExpenses.forEach((item, idx) => {
+                    text += `${idx + 1}. ${item.description}: *${formatMoney(item.amount)} ر.س*\\n`;
+                });
+            }
 
             text += `\\n━━━━━━━━━━━━━━━\\n`;
             text += `💰 *الإجمالي:* ${formatMoney(monthTotal)} ر.س\\n`;
@@ -1667,8 +1675,8 @@
 
             document.getElementById('memberWelcomeName').innerText = `مرحباً، ${currentUser.name}`;
 
-            const allExpenses = Object.values(expensesData);
-            const allDeposits = Object.values(depositsData);
+            const allExpenses = Object.values(expensesData || {});
+            const allDeposits = Object.values(depositsData || {});
             const targetMonth = document.getElementById('memberMonthFilter').value;
 
             // 1. Calculate Member Financial Totals
@@ -1705,7 +1713,7 @@
             // Render Member Expenses Table
             const tbody = document.getElementById('memberExpensesTableBody');
             if (monthExpenses.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400">لا توجد مصاريف مسجلة لشهر ${targetMonth}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-slate-400">لا توجد مصاريف مسجلة لشهر ${targetMonth}</td></tr>`;
             } else {
                 tbody.innerHTML = monthExpenses.sort((a,b) => new Date(b.date) - new Date(a.date)).map(exp => `
                     <tr class="hover:bg-slate-50">
