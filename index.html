@@ -144,7 +144,7 @@
                         <i class="fa-solid fa-seedling"></i>
                     </div>
                     <h2 class="text-xl sm:text-2xl font-black text-slate-800">تسجيل الدخول للنظام</h2>
-                    <p class="text-xs text-slate-500 mt-1">اختر حسابك وأدخل كلمة المرور للدخول</p>
+                    <p class="text-xs text-slate-500 mt-1">اختر حسابك وأدخل كلمة المرور الخاصة بك</p>
                 </div>
 
                 <!-- Tabs: Member Login vs Admin Login -->
@@ -209,7 +209,7 @@
                     </div>
                     <div>
                         <h2 class="text-xl sm:text-2xl font-black">لوحة تحكم المشرف (Admin)</h2>
-                        <p class="text-xs text-emerald-200">إدارة وتوزيع مصاريف المزرعة على 9 أعضاء مع احتساب الأرصدة</p>
+                        <p class="text-xs text-emerald-200">إدارة وتوزيع مصاريف المزرعة على 9 أعضاء مع تسجيل إيداعات وسدادات كل عضو</p>
                     </div>
                 </div>
                 
@@ -220,8 +220,14 @@
                         <input type="month" id="selectedMonthFilter" onchange="onMonthFilterChange()" class="bg-emerald-900 text-white border-0 rounded-lg px-2 py-1 text-xs focus:ring-1 focus:ring-emerald-400 cursor-pointer font-bold font-mono">
                     </div>
 
+                    <!-- Open Quick Deposit for Any Member -->
+                    <button onclick="openDepositModal()" class="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-extrabold text-xs sm:text-sm rounded-2xl shadow-md transition-all flex items-center gap-1.5 border border-emerald-300">
+                        <i class="fa-solid fa-hand-holding-dollar text-slate-900"></i>
+                        <span>+ تسجيل إيداع / سداد</span>
+                    </button>
+
                     <!-- Excel Import Button -->
-                    <button onclick="openImportExcelModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-md transition-all flex items-center gap-1.5 border border-emerald-400">
+                    <button onclick="openImportExcelModal()" class="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-md transition-all flex items-center gap-1.5 border border-emerald-500">
                         <i class="fa-solid fa-file-excel text-emerald-200"></i>
                         <span>استيراد إكسيل</span>
                     </button>
@@ -271,7 +277,7 @@
 
                 <div class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-100 shadow-sm flex flex-col justify-between">
                     <div class="flex justify-between items-center text-slate-500 mb-2">
-                        <span class="text-xs font-bold">إجمالي إيداعات الأعضاء</span>
+                        <span class="text-xs font-bold">إجمالي إيداعات وسدادات الأعضاء</span>
                         <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm"><i class="fa-solid fa-vault"></i></div>
                     </div>
                     <div>
@@ -289,7 +295,7 @@
                 </button>
                 <button onclick="switchAdminSection('members')" id="btnAdminTabMembers" class="px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all bg-slate-100 text-slate-600 hover:text-emerald-700 flex items-center gap-1.5 whitespace-nowrap">
                     <i class="fa-solid fa-user-gear"></i>
-                    <span>إدارة الأعضاء وكلمات المرور (9 أعضاء)</span>
+                    <span>إدارة الأعضاء والإيداعات وكلمات المرور</span>
                 </button>
                 <button onclick="switchAdminSection('summaryTable')" id="btnAdminTabSummary" class="px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all bg-slate-100 text-slate-600 hover:text-emerald-700 flex items-center gap-1.5 whitespace-nowrap">
                     <i class="fa-solid fa-table-list"></i>
@@ -383,18 +389,22 @@
                 </div>
             </div>
 
-            <!-- SECTION B: MEMBERS & PASSWORDS & DEPOSITS MANAGEMENT -->
+            <!-- SECTION B: MEMBERS & DEPOSITS & PASSWORDS MANAGEMENT -->
             <div id="adminMembersSection" class="space-y-6 hidden">
                 <div class="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
                         <div>
-                            <h3 class="text-base sm:text-lg font-bold text-slate-800">إدارة أسماء الأعضاء الـ 9 وكلمات المرور الخاصة بهم</h3>
-                            <p class="text-xs text-slate-400">يمكن للمشرف تعديل اسم كل عضو، تعيين كلمة مرور لدخوله، وتسجيل إيداعاته</p>
+                            <h3 class="text-base sm:text-lg font-bold text-slate-800">أعضاء المزرعة الـ 9: تسجيل الإيداعات والدفعات وتعديل كلمات المرور</h3>
+                            <p class="text-xs text-slate-400">جميع الأرصدة تبدأ من الصفر، ويتم حساب (الرصيد المتبقي = إجمالي الإيداعات - مجموع أنصبة المصاريف)</p>
                         </div>
-                        <div class="flex gap-2">
+                        <div class="flex flex-wrap gap-2">
                             <button onclick="openDepositModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow transition-all flex items-center gap-1.5">
                                 <i class="fa-solid fa-money-bill-transfer"></i>
-                                <span>تسجيل إيداع لعضو</span>
+                                <span>+ تسجيل إيداع / سداد لعضو</span>
+                            </button>
+                            <button onclick="confirmWipeAllDeposits()" class="px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold rounded-xl border border-amber-300 transition-all flex items-center gap-1.5" title="تصفير كافة إيداعات وسدادات الأعضاء">
+                                <i class="fa-solid fa-rotate-left"></i>
+                                <span>تصفير الإيداعات (0.00)</span>
                             </button>
                             <button onclick="confirmWipeAllExpenses()" class="px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold rounded-xl border border-red-200 transition-all flex items-center gap-1.5" title="مسح وتصفير كافة المصاريف من السحابة">
                                 <i class="fa-solid fa-trash-can"></i>
@@ -451,21 +461,21 @@
                             <span class="text-[11px] bg-emerald-500/30 border border-emerald-400/40 text-emerald-200 px-2.5 py-0.5 rounded-full font-bold">عضو مساهم (1 من 9)</span>
                         </div>
                         <h2 id="memberWelcomeName" class="text-xl sm:text-2xl font-black mt-1">مرحباً بك</h2>
-                        <p class="text-xs text-emerald-100/80">متابعة حصتك في مصاريف مزرعة بابا حميدان ورصيدك الحالي</p>
+                        <p class="text-xs text-emerald-100/80">متابعة حصتك في مصاريف مزرعة بابا حميدان ورصيدك وإيداعاتك</p>
                     </div>
                 </div>
 
                 <div class="bg-white/10 backdrop-blur-md px-5 py-3.5 rounded-2xl border border-white/20 text-center w-full md:w-auto">
                     <div class="text-xs text-emerald-200 font-semibold mb-0.5">حالة الرصيد المتبقي</div>
                     <div id="memberNetBalanceBig" class="text-2xl sm:text-3xl font-black font-mono">0.00 ريال</div>
-                    <div id="memberNetBalanceStatus" class="text-[11px] font-bold text-emerald-300">رصيدك متزن</div>
+                    <div id="memberNetBalanceStatus" class="text-[11px] font-bold text-emerald-300">رصيدك متزن (0.00)</div>
                 </div>
             </div>
 
             <!-- Member Key Metrics -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
-                    <div class="text-slate-400 text-xs font-bold mb-1">إجمالي إيداعاتك</div>
+                    <div class="text-slate-400 text-xs font-bold mb-1">إجمالي ما دفعته وأودعته</div>
                     <div id="memberTotalDeposits" class="text-lg sm:text-xl font-black text-emerald-600 font-mono">0.00</div>
                     <span class="text-[10px] text-slate-400">ريال سعودي</span>
                 </div>
@@ -531,8 +541,8 @@
 
                 <!-- Member Deposits History (1 col) -->
                 <div class="lg:col-span-1 bg-white rounded-3xl p-5 border border-slate-100 shadow-sm flex flex-col">
-                    <h3 class="text-base font-bold text-slate-800 mb-1">سجل إيداعاتك الشخصية</h3>
-                    <p class="text-xs text-slate-400 mb-4">المبالغ التي قمت بتحويلها وإيداعها في الصندوق</p>
+                    <h3 class="text-base font-bold text-slate-800 mb-1">سجل إيداعاتك وسداداتك</h3>
+                    <p class="text-xs text-slate-400 mb-4">المبالغ التي قمت بتحويلها وسدادها للصندوق</p>
 
                     <div class="overflow-y-auto max-h-[350px] custom-scrollbar flex-grow">
                         <div id="memberDepositList" class="space-y-2.5">
@@ -677,13 +687,13 @@
     </div>
 
 
-    <!-- ==================== MODAL: ADD DEPOSIT ==================== -->
+    <!-- ==================== MODAL: ADD / EDIT DEPOSIT OR PAYMENT ==================== -->
     <div id="depositModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 border border-slate-100">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
                     <i class="fa-solid fa-hand-holding-dollar text-emerald-600"></i>
-                    <span>تسجيل إيداع لعضو</span>
+                    <span>تسجيل إيداع / سداد لعضو</span>
                 </h3>
                 <button onclick="closeDepositModal()" class="text-slate-400 hover:text-slate-600 text-lg">
                     <i class="fa-solid fa-xmark"></i>
@@ -693,29 +703,40 @@
             <form id="addDepositForm" onsubmit="handleAddDeposit(event)" class="space-y-3.5">
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-1">اختر العضو:</label>
-                    <select id="depositMemberSelect" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 font-medium">
+                    <select id="depositMemberSelect" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 font-bold">
                         <option value="">-- حدد العضو --</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">المبلغ المودع (ريال):</label>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">نوع العملية:</label>
+                    <select id="depositTypeSelect" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-emerald-500">
+                        <option value="سداد نقدي (كاش)">سداد نقدي (كاش)</option>
+                        <option value="تحويل بنكي (الراجحي)">تحويل بنكي (الراجحي)</option>
+                        <option value="تحويل بنكي (بنك آخر)">تحويل بنكي (بنك آخر)</option>
+                        <option value="إيداع شهري مسبق">إيداع شهري مسبق</option>
+                        <option value="تسوية رصيد">تسوية رصيد</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">المبلغ المودع / المدفوع (ريال):</label>
                     <input type="number" step="0.01" id="depositAmount" required placeholder="0.00" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-600 font-mono">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">تاريخ الإيداع:</label>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">تاريخ العملية:</label>
                     <input type="date" id="depositDate" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium font-mono">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">ملاحظات (رقم الحوالة أو المصرف):</label>
-                    <input type="text" id="depositNotes" placeholder="مثال: تحويل الراجحي / كاش..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">ملاحظات أو رقم الحوالة (اختياري):</label>
+                    <input type="text" id="depositNotes" placeholder="مثال: حوالة دفعة شهر سبتمبر..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium">
                 </div>
 
                 <div class="flex gap-2 pt-2">
                     <button type="submit" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all shadow">
-                        حفظ الإيداع
+                        حفظ العملية وزيادة الرصيد
                     </button>
                     <button type="button" onclick="closeDepositModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl text-xs transition-all">
                         إلغاء
@@ -812,12 +833,12 @@
         let currentUser = null;
         let isCloudConnected = false;
 
-        // Data Stores - Clean Zero State (No hardcoded sample expenses)
+        // Data Stores - Zero state by default (No dummy records)
         let membersData = {};
         let expensesData = {};
         let depositsData = {};
 
-        // Default 9 Members Slots (Admin can rename them and set passwords)
+        // Default 9 Members Slots (Clean template with 0 balance)
         const default9Members = {
             "m1": { id: "m1", name: "العضو 1", pin: "1111", phone: "" },
             "m2": { id: "m2", name: "العضو 2", pin: "2222", phone: "" },
@@ -854,13 +875,13 @@
                 if (localExpenses) {
                     expensesData = JSON.parse(localExpenses);
                 } else {
-                    expensesData = {}; // Clean empty state
+                    expensesData = {}; // Clean zero
                 }
 
                 if (localDeposits) {
                     depositsData = JSON.parse(localDeposits);
                 } else {
-                    depositsData = {};
+                    depositsData = {}; // Clean zero
                 }
 
                 updateMembersSelectOptions();
@@ -930,7 +951,7 @@
                 });
         }
 
-        // --- Setup Firebase Realtime Listeners (No hardcoded re-seeding on delete!) ---
+        // --- Setup Firebase Realtime Listeners ---
         function setupFirebaseListeners() {
             // 1. Members
             db.ref('members').on('value', (snapshot) => {
@@ -948,13 +969,13 @@
                 console.warn('Firebase members sync issue:', err);
             });
 
-            // 2. Expenses (Never auto-seed dummy data when empty!)
+            // 2. Expenses (Zero state)
             db.ref('expenses').on('value', (snapshot) => {
                 const val = snapshot.val();
                 if (val) {
                     expensesData = val;
                 } else {
-                    expensesData = {}; // Stay completely empty if deleted!
+                    expensesData = {};
                 }
                 saveLocalCache();
                 if (currentUser) renderCurrentView();
@@ -962,9 +983,14 @@
                 console.warn('Firebase expenses sync issue:', err);
             });
 
-            // 3. Deposits
+            // 3. Deposits (Zero state)
             db.ref('deposits').on('value', (snapshot) => {
-                depositsData = snapshot.val() || {};
+                const val = snapshot.val();
+                if (val) {
+                    depositsData = val;
+                } else {
+                    depositsData = {};
+                }
                 saveLocalCache();
                 if (currentUser) renderCurrentView();
             }, (err) => {
@@ -1202,23 +1228,23 @@
 
                         <div class="bg-white p-3 rounded-xl border border-slate-100 space-y-1.5 text-xs mb-3">
                             <div class="flex justify-between text-slate-500">
-                                <span>إجمالي الإيداعات:</span>
+                                <span>إجمالي المدفوع والمودع:</span>
                                 <span class="font-bold font-mono text-emerald-600">${formatMoney(totalDep)} ريال</span>
                             </div>
                             <div class="flex justify-between text-slate-500">
-                                <span>مجموع الأنصبة الواجبة:</span>
+                                <span>مجموع الأنصبة المستحقة:</span>
                                 <span class="font-bold font-mono text-red-500">${formatMoney(allTimeSharePerPerson)} ريال</span>
                             </div>
-                            <div class="flex justify-between font-bold pt-1.5 border-t border-slate-100 ${isPositive ? 'text-emerald-700' : 'text-red-600'}">
+                            <div class="flex justify-between font-bold pt-1.5 border-t border-slate-100 ${netBalance === 0 ? 'text-slate-700' : (isPositive ? 'text-emerald-700' : 'text-red-600')}">
                                 <span>الرصيد المتبقي:</span>
-                                <span class="font-mono text-sm">${isPositive ? '+' : ''}${formatMoney(netBalance)} ريال</span>
+                                <span class="font-mono text-sm">${isPositive && netBalance > 0 ? '+' : ''}${formatMoney(netBalance)} ريال</span>
                             </div>
                         </div>
 
                         <div class="flex gap-2">
-                            <button onclick="quickDepositForMember('${member.id}')" class="flex-1 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1">
-                                <i class="fa-solid fa-plus text-[10px]"></i>
-                                <span>تسجيل إيداع</span>
+                            <button onclick="quickDepositForMember('${member.id}')" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm">
+                                <i class="fa-solid fa-money-bill-transfer"></i>
+                                <span>+ تسجيل إيداع / سداد</span>
                             </button>
                         </div>
                     </div>
@@ -1354,13 +1380,27 @@
         }
 
         function confirmWipeAllExpenses() {
-            if (confirm('تنبيه: هل أنت متأكد من مسح وتصفير كافة المصاريف نهائياً من قاعدة البيانات للبدء من جديد للشهر القادم؟')) {
+            if (confirm('تنبيه: هل أنت متأكد من مسح وتصفير كافة المصاريف نهائياً للبدء من جديد؟')) {
                 expensesData = {};
                 saveLocalCache();
                 renderAdminDashboard();
 
                 db.ref('expenses').set({}).then(() => {
-                    showToast('تم تصفير المصاريف بنجاح والبدء بصفحة نظيفة', 'success');
+                    showToast('تم تصفير المصاريف بنجاح', 'success');
+                }).catch(err => {
+                    showToast('تم التصفير محلياً: ' + err.message, 'info');
+                });
+            }
+        }
+
+        function confirmWipeAllDeposits() {
+            if (confirm('تنبيه: هل أنت متأكد من تصفير كافة الإيداعات وسدادات الأعضاء وجعل أرصدتهم زيرو؟')) {
+                depositsData = {};
+                saveLocalCache();
+                renderAdminDashboard();
+
+                db.ref('deposits').set({}).then(() => {
+                    showToast('تم تصفير كافة إيداعات الأعضاء بنجاح (الأرصدة 0.00)', 'success');
                 }).catch(err => {
                     showToast('تم التصفير محلياً: ' + err.message, 'info');
                 });
@@ -1384,6 +1424,7 @@
         function handleAddDeposit(e) {
             e.preventDefault();
             const memberId = document.getElementById('depositMemberSelect').value;
+            const depType = document.getElementById('depositTypeSelect').value;
             const amount = parseFloat(document.getElementById('depositAmount').value);
             const date = document.getElementById('depositDate').value;
             const notes = document.getElementById('depositNotes').value.trim();
@@ -1397,9 +1438,10 @@
             const depositItem = {
                 id: newId,
                 memberId: memberId,
+                type: depType,
                 amount: amount,
                 date: date,
-                notes: notes,
+                notes: notes ? `${depType} - ${notes}` : depType,
                 createdAt: firebase.database.ServerValue.TIMESTAMP
             };
 
@@ -1408,7 +1450,7 @@
             renderAdminDashboard();
 
             db.ref('deposits/' + newId).set(depositItem).then(() => {
-                showToast('تم تسجيل الإيداع ومزامنته سحابياً', 'success');
+                showToast(`تم تسجيل ${depType} بمبلغ ${formatMoney(amount)} ريال ومزامنته سحابياً`, 'success');
                 closeDepositModal();
             }).catch(err => {
                 showToast('تم الحفظ محلياً: ' + err.message, 'info');
@@ -1702,11 +1744,14 @@
             const netStatus = document.getElementById('memberNetBalanceStatus');
             netEl.innerText = `${netBalance >= 0 ? '+' : ''}${formatMoney(netBalance)} ريال`;
             
-            if (netBalance >= 0) {
+            if (netBalance === 0) {
+                netStatus.innerText = 'رصيدك متزن (0.00 ريال)';
+                netStatus.className = 'text-[11px] font-bold text-emerald-300';
+            } else if (netBalance > 0) {
                 netStatus.innerText = 'رصيدك في السليم (لديك فائض)';
                 netStatus.className = 'text-[11px] font-bold text-emerald-300';
             } else {
-                netStatus.innerText = 'عليك مستحقات متأخرة يرجى السداد';
+                netStatus.innerText = 'عليك مستحقات متبقية يرجى السداد';
                 netStatus.className = 'text-[11px] font-bold text-amber-300';
             }
 
@@ -1732,12 +1777,12 @@
             // Render Member Deposit History
             const depContainer = document.getElementById('memberDepositList');
             if (myDeposits.length === 0) {
-                depContainer.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs">لم يتم تسجيل أي إيداعات لك حتى الآن</div>';
+                depContainer.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs">لا توجد أي إيداعات أو سدادات مسجلة لك حتى الآن (الرصيد 0.00)</div>';
             } else {
                 depContainer.innerHTML = myDeposits.sort((a,b) => new Date(b.date) - new Date(a.date)).map(dep => `
                     <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
                         <div>
-                            <div class="font-bold text-emerald-700 text-xs">${dep.notes || 'إيداع شهري'}</div>
+                            <div class="font-bold text-emerald-700 text-xs">${dep.notes || dep.type || 'إيداع وسداد'}</div>
                             <div class="text-[10px] text-slate-400 font-mono">${dep.date}</div>
                         </div>
                         <div class="text-sm font-black text-emerald-600 font-mono">+${formatMoney(dep.amount)} ريال</div>
